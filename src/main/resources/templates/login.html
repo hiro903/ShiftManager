@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- 日本語のページで、Thymeleafというテンプレートエンジンを使う -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <!-- 文字コードの設定 -->
+    <meta charset="UTF-8">
+    <!-- スマートフォンでも見やすくする設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ページのタイトル -->
+    <title>Symphony - ログイン</title>
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
-$END$
+<!-- 画面全体を囲むコンテナ -->
+<div class="min-h-screen">
+    <!-- ヘッダー部分 -->
+    <header>
+        <div class="header-container">
+            <!-- トップページへのリンク付きロゴ -->
+            <a th:href="@{/}" class="logo">Symphony</a>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ部分 -->
+    <main>
+        <div class="login-container">
+            <div class="login-box">
+                <h2>ログイン</h2>
+
+                <div th:if="${param.error}" class="error-message">
+                    ユーザー名またはパスワードが間違っています
+                </div>
+                
+                <div th:if="${param.logout}" class="success-message">
+                    ログアウトしました
+                </div>
+                
+                <div th:if="${message}" class="success-message" th:text="${message}"></div>
+                
+                <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+                <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+                <form class="login-form" th:action="@{/login}" method="POST">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    
+                    <div class="form-group">
+                        <label for="email">メールアドレス</label>
+                        <input id="email" name="email" type="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input id="password" name="password" type="password" required>
+                    </div>
+                    
+                    <button type="submit" class="button button-primary">ログイン</button>
+                </form>
+                
+                <div class="cancel-button-container">
+                    <a th:href="@{/}" class="button button-secondary">キャンセル</a>
+                </div>
+                
+                <div class="login-link">
+                    <a th:href="@{/account/create}">アカウントをお持ちでない方はこちら</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>
