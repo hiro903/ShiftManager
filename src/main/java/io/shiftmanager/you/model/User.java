@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
@@ -15,16 +15,17 @@ import java.time.LocalDateTime;
 public class User {
     private Long userId;
 
-    @NotBlank(message = "ユーザー名を入力してください")
-    @Size(min = 2, max = 20, message = "ユーザー名は2文字以上20文字以下で入力してください")
+    @NotBlank(groups = Registration.class, message = "ユーザー名を入力してください")
+    @Size(min = 2, max = 50, message = "ユーザー名は2文字以上50文字以下で入力してください")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "ユーザー名は英数字、ハイフン、アンダースコアのみ使用可能です")
     private String username;
-    @JsonIgnore
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "パスワードを入力してください")
-    @Size(min = 8, max = 20, message = "パスワードは8文字以上20文字以下で入力してください")
+    @Size(min = 6, max = 20, message = "パスワードは6文字以上20文字以下で入力してください")
     @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-            message = "パスワードは少なくとも1つの英字、数字、特殊文字を含める必要があります"
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
+            message = "パスワードは少なくとも1つの英字(A-Z,a-z)、数字(0-9)を含める必要があります"
     )
     private String password;
 
@@ -32,26 +33,21 @@ public class User {
     @Email(message = "有効なメールアドレスを入力してください")
     @Size(max = 100, message = "メールアドレスは100文字以下で入力してください")
     private String email;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean isActive;
-    private boolean isAdmin;
+    private boolean active;
+    private boolean admin;
+
+    // バリデーショングループ用のマーカーインターフェース
+    public interface Registration {}
 
     // Spring Security用のメソッド
     public boolean isAdmin() {
-        return this.isAdmin;
+        return this.admin;
     }
 
     public boolean isActive() {
-        return this.isActive;
-    }
-    
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+        return this.active;
     }
 }
-
