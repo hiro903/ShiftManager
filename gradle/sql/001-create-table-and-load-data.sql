@@ -41,7 +41,7 @@ CREATE TABLE shift_periods (
     period_id INT PRIMARY KEY AUTO_INCREMENT,
     year INT NOT NULL,
     month INT NOT NULL,
-    period　 ENUM('submitted', 'deadline', 'notified') DEFAULT 'submitted',
+    period ENUM('submitted', 'deadline', 'notified') DEFAULT 'submitted',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY (year, month)
