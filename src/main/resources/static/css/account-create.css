@@ -1,0 +1,257 @@
+/* 基本的なスタイル設定 */
+* {
+  /* 要素の余白をなくします */
+  margin: 0;
+  padding: 0;
+  /* 要素のサイズ計算方法を設定 */
+  box-sizing: border-box;
+}
+
+/* ページ全体のスタイル */
+body {
+  /* フォントの種類を設定 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* 最小の高さを画面いっぱいに */
+  min-height: 100vh;
+  /* 要素を縦に並べる */
+  display: flex;
+  flex-direction: column;
+  /* 背景色を白に */
+  background-color: #fff;
+  /* 行の高さを1.5倍に */
+  line-height: 1.5;
+  /* フォントを滑らかに表示 */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 画面の最小の高さを設定 */
+.min-h-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ヘッダーのスタイル */
+header {
+  /* 背景色を薄い黄色に */
+  background-color: #fef9c3;
+  /* 下に境界線を追加 */
+  border-bottom: 1px solid #e5e7eb;
+  /* 影をつける */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  /* 内側の余白を設定 */
+  padding: 1rem;
+}
+
+/* ヘッダーの中身のスタイル */
+.header-container {
+  /* 最大幅を設定 */
+  max-width: 1200px;
+  /* 中央揃え */
+  margin: 0 auto;
+  /* 要素を横に並べる */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 高さを設定 */
+  height: 3rem;
+}
+
+/* ロゴのスタイル */
+.logo {
+  /* フォントサイズを大きく */
+  font-size: 1.5rem;
+  /* 太字に */
+  font-weight: 700;
+  /* 下線を消す */
+  text-decoration: none;
+  /* 文字色を濃いグレーに */
+  color: #111827;
+}
+
+/* ロゴにマウスを乗せた時 */
+.logo:hover {
+  /* 少し透明に */
+  opacity: 0.8;
+}
+
+/* メインコンテンツのスタイル */
+main {
+  /* 残りのスペースを埋める */
+  flex: 1;
+  /* 中央揃え */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 内側の余白を設定 */
+  padding: 2rem;
+}
+
+/* アカウント作成フォームの外枠 */
+.account-create-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* アカウント作成フォームの箱 */
+.account-create-box {
+  /* 背景を白に */
+  background-color: #fff;
+  /* 角を丸く */
+  border-radius: 0.5rem;
+  /* 影をつける */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* 内側の余白を設定 */
+  padding: 2rem;
+}
+
+/* 見出しのスタイル */
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* フォームのスタイル */
+.account-create-form {
+  /* 要素を縦に並べる */
+  display: flex;
+  flex-direction: column;
+  /* 要素間の間隔を設定 */
+  gap: 1.5rem;
+}
+
+/* フォームの各項目のスタイル */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ラベルのスタイル */
+label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* 入力欄のスタイル */
+input {
+  /* 内側の余白を設定 */
+  padding: 0.75rem;
+  /* 枠線を設定 */
+  border: 1px solid #d1d5db;
+  /* 角を丸く */
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  width: 100%;
+  /* アニメーションを設定 */
+  transition: border-color 0.2s;
+}
+
+/* 入力欄がフォーカスされた時 */
+input:focus {
+  /* 枠線を消す */
+  outline: none;
+  /* 枠線の色を変更 */
+  border-color: #fef9c3;
+  /* 影をつける */
+  box-shadow: 0 0 0 3px rgba(254, 249, 195, 0.5);
+}
+
+/* ボタンの基本スタイル */
+.button {
+  /* 要素を横に並べる */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 内側の余白を設定 */
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  /* 角を丸く */
+  border-radius: 0.375rem;
+  /* アニメーションを設定 */
+  transition: all 0.2s;
+  /* マウスカーソルを指に */
+  cursor: pointer;
+  /* 下線を消す */
+  text-decoration: none;
+  width: 100%;
+}
+
+/* メインボタンのスタイル */
+.button-primary {
+  background-color: #fef9c3;
+  color: #111827;
+  border: none;
+}
+
+/* メインボタンにマウスを乗せた時 */
+.button-primary:hover {
+  background-color: #fef08a;
+}
+
+/* サブボタンのスタイル */
+.button-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  margin-top: 1rem;
+}
+
+/* サブボタンにマウスを乗せた時 */
+.button-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+/* リンクのスタイル */
+.login-link {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.login-link a {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+/* リンクにマウスを乗せた時 */
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* メッセージのスタイル */
+.success-message,
+.error-message {
+  /* 内側の余白を設定 */
+  padding: 0.75rem;
+  /* 角を丸く */
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+/* 成功メッセージのスタイル */
+.success-message {
+  /* 背景色を薄い緑に */
+  background-color: #ecfdf5;
+  /* 文字色を濃い緑に */
+  color: #047857;
+  /* 枠線を設定 */
+  border: 1px solid #a7f3d0;
+}
+
+/* エラーメッセージのスタイル */
+.error-message {
+  /* 背景色を薄い赤に */
+  background-color: #fef2f2;
+  /* 文字色を濃い赤に */
+  color: #dc2626;
+  /* 枠線を設定 */
+  border: 1px solid #fecaca;
+} 

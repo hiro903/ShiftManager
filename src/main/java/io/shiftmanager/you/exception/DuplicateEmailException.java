@@ -1,2 +1,7 @@
-package io.shiftmanager.you.exception;public class DuplicateEmailException {
+package io.shiftmanager.you.exception;
+
+public class DuplicateEmailException extends RuntimeException {
+    public DuplicateEmailException(String message) {
+        super(message);
+    }
 }

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!-- 日本語のページで、Thymeleafというテンプレートエンジンを使う -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 文字コードの設定 -->
+    <meta charset="UTF-8">
+    <!-- スマートフォンでも見やすくする設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ページのタイトル -->
+    <title>Symphony - アカウント作成</title>
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" th:href="@{/css/account-create.css}">
+</head>
+<body>
+<!-- 画面全体を囲むコンテナ -->
+<div class="min-h-screen">
+    <!-- ヘッダー部分 -->
+    <header>
+        <div class="header-container">
+            <!-- トップページへのリンク付きロゴ -->
+            <a th:href="@{/}" class="logo">Symphony</a>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ部分 -->
+    <main>
+        <div class="account-create-container">
+            <div class="account-create-box">
+                <!-- 見出し -->
+                <h2>アカウント作成</h2>
+
+                <!-- 成功メッセージ（ある場合のみ表示） -->
+                <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+                <!-- エラーメッセージ（ある場合のみ表示） -->
+                <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+                <!-- アカウント作成フォーム -->
+                <form id="accountCreateForm" class="account-create-form" th:action="@{/account/create}" method="POST" th:object="${user}">
+                    <!-- セキュリティ対策のためのCSRFトークン -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <!-- ユーザー名入力欄 -->
+                    <div class="form-group">
+                        <label for="username">ユーザー名</label>
+                        <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                th:field="*{username}">
+                        <!-- ユーザー名のエラーメッセージ（エラーがある場合のみ表示） -->
+                        <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    </div>
+
+                    <!-- メールアドレス入力欄 -->
+                    <div class="form-group">
+                        <label for="email">メールアドレス</label>
+                        <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                th:field="*{email}">
+                        <!-- メールアドレスのエラーメッセージ（エラーがある場合のみ表示） -->
+                        <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <!-- パスワード入力欄 -->
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                th:field="*{password}">
+                        <!-- パスワードのエラーメッセージ（エラーがある場合のみ表示） -->
+                        <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+
+                    <!-- パスワード確認入力欄 -->
+                    <div class="form-group">
+                        <label for="confirmPassword">パスワード（確認）</label>
+                        <input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password">
+                        <!-- パスワード確認のエラーメッセージ（エラーがある場合のみ表示） -->
+                        <div class="error-message" th:if="${#fields.hasErrors('global')}" th:errors="*{global}"></div>
+                    </div>
+
+                    <!-- アカウント作成ボタン -->
+                    <button type="submit" class="button button-primary">アカウントを作成</button>
+                </form>
+
+                <!-- キャンセルボタン -->
+                <div class="cancel-button-container">
+                    <a th:href="@{/}" class="button button-secondary">キャンセル</a>
+                </div>
+
+                <!-- ログインページへのリンク -->
+                <div class="login-link">
+                    <a th:href="@{/login}">アカウントをお持ちの方はこちら</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
