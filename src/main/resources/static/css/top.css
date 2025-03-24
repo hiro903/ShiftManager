@@ -1,0 +1,118 @@
+/* ベース設定 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 左側セクション */
+.left-section {
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo-link {
+  text-decoration: none;
+}
+
+.logo {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.image-container {
+  height: 75%;
+  position: relative;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.copyright {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* 右側セクション */
+.right-section {
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.nav-button {
+  width: 100%;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+}
+
+.nav-button:last-child {
+  margin-bottom: 0;
+}
+
+.nav-button.primary {
+  background: #000;
+  color: white;
+  border: none;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button.primary:hover {
+  background: #333;
+}
+
+/* ゲストログインボタンのスタイル */
+span.nav-button {
+  cursor: default;
+  opacity: 0.6;
+}
+
+span.nav-button:hover {
+  transform: none;
+  box-shadow: none;
+}

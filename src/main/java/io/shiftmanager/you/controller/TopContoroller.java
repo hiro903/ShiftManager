@@ -1,2 +1,14 @@
-package io.shiftmanager.you.controller;public class TopContoroller {
+package io.shiftmanager.you.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class TopContoroller {
+
+    @GetMapping("/")
+    public String index(){
+        return "top";
+    }
+
 }

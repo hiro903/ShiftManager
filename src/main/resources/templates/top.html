@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony - シフト管理アプリ</title>
+    <link rel="stylesheet" th:href="@{/css/top.css}">
 </head>
 <body>
-$END$
+<div class="container">
+    <!-- 左側 - ロゴと画像 -->
+    <div class="left-section">
+        <a href="/" class="logo-link"><h1 class="logo">symphony</h1></a>
+        <div class="image-container">
+            <img th:src="@{/images/placeholder.svg}" alt="シフト管理イラスト" class="main-image">
+        </div>
+        <p class="copyright">© 2024 Symphony. All rights reserved.</p>
+    </div>
+
+    <!-- 右側 - ナビゲーション -->
+    <div class="right-section">
+        <div class="nav-card">
+            <a th:href="@{/login}" class="nav-button primary">ログイン</a>
+            <span class="nav-button">ゲストログイン</span>
+            <a th:href="@{/account/create}" class="nav-button">アカウント作成</a>
+            <span class="nav-button">ゲスト管理者ログイン</span>
+        </div>
+    </div>
+</div>
 </body>
 </html>
