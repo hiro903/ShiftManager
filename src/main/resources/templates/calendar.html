@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony - シフト管理</title>
+    <link rel="stylesheet" th:href="@{/css/calendar.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">symphony</a>
+            <nav>
+                <a href="/calendar" class="nav-link active">シフト確認</a>
+                <a href="/staff" class="nav-link">スタッフ一覧</a>
+                <a href="/account" class="nav-link">アカウント管理</a>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="nav-link logout-btn">ログアウト</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="calendar-container">
+            <h1>ユーザー用カレンダー</h1>
+
+            <div class="calendar-header">
+                <div class="month-navigation">
+                    <button class="month-nav-btn" onclick="prevMonth()">&lt;</button>
+                    <h2 id="current-month">2024年10月</h2>
+                    <button class="month-nav-btn" onclick="nextMonth()">&gt;</button>
+                </div>
+                <div class="message-container">
+                    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+                </div>
+            </div>
+
+            <div class="calendar">
+                <div class="weekdays">
+                    <div>日</div>
+                    <div>月</div>
+                    <div>火</div>
+                    <div>水</div>
+                    <div>木</div>
+                    <div>金</div>
+                    <div>土</div>
+                </div>
+                <div id="calendar-grid" class="calendar-grid">
+                    <!-- 日付は JavaScript で動的に生成されます -->
+                </div>
+            </div>
+
+            <div class="calendar-actions">
+                <button class="btn" id="bulk-day-btn">曜日で一括入力</button>
+                <div class="right-buttons">
+                    <button class="btn" id="reset-btn">リセット</button>
+                    <button class="btn btn-primary" id="save-btn">シフト保存</button>
+                    <button class="btn btn-primary" id="submit-btn">シフト提出</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- シフト選択モーダル -->
+    <div id="shift-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>シフト希望選択</h3>
+            <p id="selected-date"></p>
+            
+            <form id="shift-form" th:action="@{/calendar/shift/request}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" id="date-input" name="date">
+                
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="no-shift" name="timezone" value="NONE" checked>
+                        <label for="no-shift">
+                            <span class="radio-label">勤務しない</span>
+                            <span class="radio-description">この日は勤務希望を出しません</span>
+                        </label>
+                    </div>
+                    
+                    <div class="radio-option">
+                        <input type="radio" id="morning-shift" name="timezone" value="MORNING">
+                        <label for="morning-shift">
+                            <span class="radio-label">午前</span>
+                            <span class="radio-description">9:00〜13:00</span>
+                        </label>
+                    </div>
+                    
+                    <div class="radio-option">
+                        <input type="radio" id="afternoon-shift" name="timezone" value="AFTERNOON">
+                        <label for="afternoon-shift">
+                            <span class="radio-label">午後</span>
+                            <span class="radio-description">13:00〜17:00</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn" onclick="closeModal()">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 曜日一括入力モーダル -->
+    <div id="bulk-day-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBulkDayModal()">&times;</span>
+            <h3>曜日で一括入力</h3>
+            <p>選択した曜日のすべての日にシフトを一括設定します</p>
+            
+            <form id="bulk-day-form">
+                <div class="weekday-selector">
+                    <div class="weekday-option">
+                        <input type="checkbox" id="sunday" name="weekday" value="0">
+                        <label for="sunday">日曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="monday" name="weekday" value="1">
+                        <label for="monday">月曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="tuesday" name="weekday" value="2">
+                        <label for="tuesday">火曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="wednesday" name="weekday" value="3">
+                        <label for="wednesday">水曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="thursday" name="weekday" value="4">
+                        <label for="thursday">木曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="friday" name="weekday" value="5">
+                        <label for="friday">金曜日</label>
+                    </div>
+                    <div class="weekday-option">
+                        <input type="checkbox" id="saturday" name="weekday" value="6">
+                        <label for="saturday">土曜日</label>
+                    </div>
+                </div>
+                
+                <div class="shift-type-selector">
+                    <h4>シフトタイプ</h4>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="bulk-no-shift" name="timezone" value="NONE" checked>
+                            <label for="bulk-no-shift">
+                                <span class="radio-label">勤務しない</span>
+                            </label>
+                        </div>
+                        
+                        <div class="radio-option">
+                            <input type="radio" id="bulk-morning-shift" name="timezone" value="MORNING">
+                            <label for="bulk-morning-shift">
+                                <span class="radio-label">午前</span>
+                                <span class="radio-description">9:00〜13:00</span>
+                            </label>
+                        </div>
+                        
+                        <div class="radio-option">
+                            <input type="radio" id="bulk-afternoon-shift" name="timezone" value="AFTERNOON">
+                            <label for="bulk-afternoon-shift">
+                                <span class="radio-label">午後</span>
+                                <span class="radio-description">13:00〜17:00</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn" onclick="closeBulkDayModal()">キャンセル</button>
+                    <button type="button" class="btn btn-primary" onclick="applyBulkDaySettings()">適用</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Thymeleafからのデータ
+        const shifts = /*[[${shifts}]]*/ [];
+        const currentUser = /*[[${currentUser}]]*/ { username: 'ユーザー名' };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 現在の年月を設定
+            const now = new Date();
+            let currentYear = now.getFullYear();
+            let currentMonth = now.getMonth();
+            
+            // カレンダーを初期化
+            renderCalendar(currentYear, currentMonth);
+            
+            // シフトデータを表示
+            renderShifts(shifts);
+            
+            // 月移動ボタンのイベントリスナー
+            window.prevMonth = function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar(currentYear, currentMonth);
+                renderShifts(shifts);
+            };
+            
+            window.nextMonth = function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(currentYear, currentMonth);
+                renderShifts(shifts);
+            };
+            
+            // モーダル関連の関数
+            window.openModal = function(date) {
+                const modal = document.getElementById('shift-modal');
+                const dateInput = document.getElementById('date-input');
+                const selectedDateText = document.getElementById('selected-date');
+                
+                const dateObj = new Date(date);
+                const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+                const formattedDate = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日（${weekdays[dateObj.getDay()]}）`;
+                
+                selectedDateText.textContent = formattedDate;
+                dateInput.value = date;
+                
+                // ラジオボタンのリセット
+                document.getElementById('no-shift').checked = true;
+                
+                // この日付の既存シフトを確認
+                const dateShifts = shifts.filter(shift => {
+                    const shiftDate = new Date(shift.shiftDate);
+                    return dateObj.getFullYear() === shiftDate.getFullYear() && 
+                           dateObj.getMonth() === shiftDate.getMonth() && 
+                           dateObj.getDate() === shiftDate.getDate();
+                });
+                
+                // シフトがあれば対応するラジオボタンを選択
+                if (dateShifts.length > 0) {
+                    const shift = dateShifts[0];
+                    if (shift.timezone === 'MORNING') {
+                        document.getElementById('morning-shift').checked = true;
+                    } else if (shift.timezone === 'AFTERNOON') {
+                        document.getElementById('afternoon-shift').checked = true;
+                    }
+                }
+                
+                modal.style.display = 'block';
+            };
+            
+            window.closeModal = function() {
+                document.getElementById('shift-modal').style.display = 'none';
+            };
+            
+            // モーダル外クリックで閉じる
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('shift-modal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // ボタンのイベントリスナー
+            document.getElementById('bulk-day-btn').addEventListener('click', function() {
+                openBulkDayModal();
+            });
+            
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                if (confirm('すべてのシフト希望をリセットしますか？')) {
+                    // リセット処理
+                    resetAllShifts();
+                }
+            });
+            
+            document.getElementById('save-btn').addEventListener('click', function() {
+                saveShifts();
+            });
+            
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                if (confirm('シフトを提出しますか？提出後は変更できません。')) {
+                    submitShifts();
+                }
+            });
+            
+            // 曜日一括入力モーダル
+            window.openBulkDayModal = function() {
+                document.getElementById('bulk-day-modal').style.display = 'block';
+            };
+            
+            window.closeBulkDayModal = function() {
+                document.getElementById('bulk-day-modal').style.display = 'none';
+            };
+            
+            window.applyBulkDaySettings = function() {
+                // 選択された曜日を取得
+                const selectedWeekdays = [];
+                document.querySelectorAll('#bulk-day-form input[name="weekday"]:checked').forEach(checkbox => {
+                    selectedWeekdays.push(parseInt(checkbox.value));
+                });
+                
+                if (selectedWeekdays.length === 0) {
+                    alert('少なくとも一つの曜日を選択してください');
+                    return;
+                }
+                
+                // 選択されたシフトタイプを取得
+                const shiftType = document.querySelector('#bulk-day-form input[name="timezone"]:checked').value;
+                
+                // 現在表示中の年月を取得
+                const currentMonthText = document.getElementById('current-month').textContent;
+                const year = parseInt(currentMonthText.split('年')[0]);
+                const month = parseInt(currentMonthText.split('年')[1].split('月')[0]);
+                
+                // APIを呼び出し
+                const csrfToken = document.querySelector('input[name="_csrf"]').value;
+                const csrfHeader = document.querySelector('input[name="_csrf"]').name;
+                
+                fetch('/calendar/shift/bulk-day', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: new URLSearchParams({
+                        year: year,
+                        month: month,
+                        weekdays: selectedWeekdays,
+                        timezone: shiftType
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 成功したら再読み込み
+                        window.location.reload();
+                    } else {
+                        alert('エラー: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('処理中にエラーが発生しました');
+                });
+                
+                closeBulkDayModal();
+            };
+            
+            function updateShiftIndicator(cell, shiftType) {
+                // 既存のシフトインジケータを削除
+                const existingIndicator = cell.querySelector('.shift-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+                
+                // シフトタイプがNONEでなければ新しいインジケータを追加
+                if (shiftType !== 'NONE') {
+                    const shiftsContainer = cell.querySelector('.shifts-container');
+                    const indicator = document.createElement('div');
+                    indicator.className = `shift-indicator ${shiftType.toLowerCase()}`;
+                    indicator.textContent = shiftType === 'MORNING' ? '○' : '●';
+                    
+                    shiftsContainer.appendChild(indicator);
+                    
+                    // クライアント側のシフトデータを更新（本来はサーバーと同期する必要あり）
+                    const dateStr = cell.getAttribute('data-date');
+                    
+                    // 既存のシフトを探す
+                    const existingShiftIndex = shifts.findIndex(shift => {
+                        const shiftDate = new Date(shift.shiftDate);
+                        const cellDate = new Date(dateStr);
+                        return shiftDate.toDateString() === cellDate.toDateString();
+                    });
+                    
+                    if (existingShiftIndex >= 0) {
+                        // 既存のシフトを更新
+                        shifts[existingShiftIndex].timezone = shiftType;
+                    } else {
+                        // 新しいシフトを追加
+                        shifts.push({
+                            shiftId: Math.floor(Math.random() * 10000), // 仮のID
+                            shiftDate: dateStr,
+                            timezone: shiftType,
+                            submitted: false
+                        });
+                    }
+                }
+            }
+            
+            function resetAllShifts() {
+                // 現在表示中の年月を取得
+                const currentMonthText = document.getElementById('current-month').textContent;
+                const year = parseInt(currentMonthText.split('年')[0]);
+                const month = parseInt(currentMonthText.split('年')[1].split('月')[0]);
+                
+                // APIを呼び出し
+                const csrfToken = document.querySelector('input[name="_csrf"]').value;
+                const csrfHeader = document.querySelector('input[name="_csrf"]').name;
+                
+                fetch('/calendar/shift/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: new URLSearchParams({
+                        year: year,
+                        month: month
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 成功したら再読み込み
+                        window.location.reload();
+                    } else {
+                        alert('エラー: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('処理中にエラーが発生しました');
+                });
+            }
+            
+            function saveShifts() {
+                // 現在のシフトデータを収集
+                const shiftsToSave = shifts.map(shift => {
+                    return {
+                        shiftId: shift.shiftId,
+                        userId: shift.userId,
+                        shiftDate: shift.shiftDate,
+                        timezone: shift.timezone,
+                        status: shift.status
+                    };
+                });
+                
+                // APIを呼び出し
+                const csrfToken = document.querySelector('input[name="_csrf"]').value;
+                const csrfHeader = document.querySelector('input[name="_csrf"]').name;
+                
+                fetch('/calendar/shift/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify(shiftsToSave)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert('エラー: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('処理中にエラーが発生しました');
+                });
+            }
+            
+            function submitShifts() {
+                // 現在表示中の年月を取得
+                const currentMonthText = document.getElementById('current-month').textContent;
+                const year = parseInt(currentMonthText.split('年')[0]);
+                const month = parseInt(currentMonthText.split('年')[1].split('月')[0]);
+                
+                // APIを呼び出し
+                const csrfToken = document.querySelector('input[name="_csrf"]').value;
+                const csrfHeader = document.querySelector('input[name="_csrf"]').name;
+                
+                fetch('/calendar/shift/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: new URLSearchParams({
+                        year: year,
+                        month: month
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        // シフト提出後は再読み込み
+                        window.location.reload();
+                    } else {
+                        alert('エラー: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('処理中にエラーが発生しました');
+                });
+            }
+        });
+        
+        function renderCalendar(year, month) {
+            // 月表示を更新
+            const monthNames = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+            document.getElementById('current-month').textContent = `${year}年${monthNames[month]}月`;
+            
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+            
+            // 月の初日
+            const firstDay = new Date(year, month, 1);
+            // 月の最終日
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // 月の初日の曜日（0: 日曜日, 6: 土曜日）
+            const firstDayOfWeek = firstDay.getDay();
+            // 月の日数
+            const daysInMonth = lastDay.getDate();
+            
+            // 前月の空白セルを追加
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyCell);
+            }
+            
+            // 月の日付を追加
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateCell = document.createElement('div');
+                dateCell.className = 'calendar-day';
+                
+                const dateObj = new Date(year, month, day);
+                const dateStr = formatDate(dateObj);
+                
+                dateCell.setAttribute('data-date', dateStr);
+                dateCell.addEventListener('click', function() {
+                    openModal(dateStr);
+                });
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                
+                const shiftsContainer = document.createElement('div');
+                shiftsContainer.className = 'shifts-container';
+                
+                dateCell.appendChild(dayNumber);
+                dateCell.appendChild(shiftsContainer);
+                calendarGrid.appendChild(dateCell);
+            }
+        }
+        
+        function renderShifts(shifts) {
+            // すべてのシフト表示をクリア
+            document.querySelectorAll('.shift-indicator').forEach(el => el.remove());
+            
+            // シフトデータを表示
+            shifts.forEach(shift => {
+                const dateStr = formatDate(new Date(shift.shiftDate));
+                const dateCell = document.querySelector(`.calendar-day[data-date="${dateStr}"]`);
+                
+                if (dateCell) {
+                    const shiftsContainer = dateCell.querySelector('.shifts-container');
+                    const indicator = document.createElement('div');
+                    indicator.className = `shift-indicator ${shift.timezone.toLowerCase()}`;
+                    indicator.textContent = shift.timezone === 'MORNING' ? '○' : '●';
+                    
+                    shiftsContainer.appendChild(indicator);
+                }
+            });
+        }
+        
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+    </script>
+</body>
+</html> 
