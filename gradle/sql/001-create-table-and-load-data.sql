@@ -14,22 +14,22 @@ INSERT INTO users (username, password, email, is_active, is_admin) VALUES ('anna
 -- SHIFT_REQUESTテーブル
 CREATE TABLE shifts (
     shift_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
     shift_date DATE NOT NULL,
-    timezone ENUM('morning', 'afternoon') DEFAULT 'morning',
-    status ENUM('requested', 'approved', 'rejected') DEFAULT 'requested',
+    timezone ENUM('MORNING', 'AFTERNOON') DEFAULT 'MORNING',
+    status ENUM('REQUESTED', 'APPROVED', 'REJECTED') DEFAULT 'REQUESTED',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     UNIQUE KEY (user_id, shift_date, timezone)
 );
 
-CREATE TABLE confirmed(
+CREATE TABLE confirmed (
     confirmed_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    shift_id INT UNSIGNED,
+    user_id INT UNSIGNED NOT NULL,
+    shift_id INT,
     confirmed_date DATE NOT NULL,
-    timezone  ENUM('morning', 'afternoon') DEFAULT 'morning',
+    timezone ENUM('MORNING', 'AFTERNOON') DEFAULT 'MORNING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),

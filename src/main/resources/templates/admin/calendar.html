@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>管理者用カレンダー</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>管理者用カレンダー</h1>
+        <p>管理者ページへのアクセスに成功しました！</p>
+        
+        <div class="calendar-header">
+            <span th:text="${currentMonth.year} + '年' + ${currentMonth.monthValue} + '月'"></span>
+        </div>
+        
+        <div>
+            <p>シフト数: <span th:text="${shifts != null ? shifts.size() : 0}"></span></p>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-reset" onclick="alert('リセットボタンがクリックされました')">リセット</button>
+            <button class="btn btn-publish" onclick="alert('公開ボタンがクリックされました')">公開する</button>
+        </div>
+    </div>
+</body>
+</html> 

@@ -6,7 +6,6 @@ import org.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @MapperScan("io.shiftmanager.you.mapper")
-
 public class ShiftManagerApplication {
 
 	public static void main(String[] args) {

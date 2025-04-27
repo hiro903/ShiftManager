@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Userモデルの基本的な機能をテストするクラス
+ */
 class UserTest {
 
     private User user;
@@ -17,6 +20,7 @@ class UserTest {
         now = LocalDateTime.now();
     }
 
+    // ユーザーの基本プロパティ（ID、ユーザー名、パスワード、メール等）の設定と取得をテスト
     @Test
     void testUserProperties() {
         // 基本データの設定
@@ -24,8 +28,8 @@ class UserTest {
         user.setUsername("test");
         user.setPassword("pass123");
         user.setEmail("test@example.com");
-        user.setIsActive(true);
-        user.setIsAdmin(false);
+        user.setActive(true);
+        user.setAdmin(false);
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
 
@@ -40,22 +44,25 @@ class UserTest {
         assertThat(user.getUpdatedAt()).isEqualTo(now);
     }
 
+    // アクティブフラグの設定と取得をテスト
     @Test
     void testActiveFlag() {
         assertThat(user.isActive()).isFalse();
 
-        user.setIsActive(true);
+        user.setActive(true);
         assertThat(user.isActive()).isTrue();
     }
 
+    // 管理者フラグの設定と取得をテスト
     @Test
     void testAdminFlag() {
         assertThat(user.isAdmin()).isFalse();
 
-        user.setIsAdmin(true);
+        user.setAdmin(true);
         assertThat(user.isAdmin()).isTrue();
     }
 
+    // 同じ値を持つユーザーオブジェクトの等価性をテスト
     @Test
     void testEquality() {
         // 同じ値を持つ2つのユーザー
@@ -68,6 +75,7 @@ class UserTest {
         assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
     }
 
+    // ユーザーオブジェクトのtoString()メソッドの出力をテスト
     @Test
     void testToString() {
         user.setUserId(1L);
@@ -82,6 +90,7 @@ class UserTest {
                 .contains("email=test@example.com");
     }
 
+    // 作成日時と更新日時の比較をテスト
     @Test
     void testDates() {
         LocalDateTime created = LocalDateTime.now();

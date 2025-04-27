@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - Symphony">Symphony</title>
+    <link rel="stylesheet" th:href="@{/css/calendar.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 各ページ固有のヘッド要素を挿入 -->
+    <th:block layout:fragment="head"></th:block>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a th:href="@{/}">Symphony</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/calendar}">シフト管理</a></li>
+                    <li><a th:href="@{/admin/calendar}" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">管理者メニュー</a></li>
+                    <li><a th:href="@{/account}">アカウント</a></li>
+                    <li>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit">ログアウト</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- 各ページのコンテンツを挿入 -->
+        <div layout:fragment="content">
+            <!-- ここにコンテンツが挿入されます -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Symphony - シフト管理システム</p>
+        </div>
+    </footer>
+
+    <!-- 各ページ固有のスクリプトを挿入 -->
+    <th:block layout:fragment="scripts"></th:block>
+</body>
+</html> 

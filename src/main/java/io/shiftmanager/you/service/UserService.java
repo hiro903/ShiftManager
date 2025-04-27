@@ -32,7 +32,7 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-        // パールアドレスの重複チェック
+        // メールアドレスの重複チェック
         if (existsByEmail(user.getEmail())) {
             throw new DuplicateEmailException("このメールアドレスは既に使用されています");
         }
@@ -83,7 +83,16 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userMapper.findByEmail(email);
+        User user = userMapper.findByEmail(email);
+        if (user != null) {
+            // 管理者権限のデバッグログを出力
+            if (user.isAdmin()) {
+                System.out.println("管理者ユーザーが見つかりました: " + email);
+            } else {
+                System.out.println("一般ユーザーが見つかりました: " + email);
+            }
+        }
+        return user;
     }
 
     public boolean existsByUsername(String username) {

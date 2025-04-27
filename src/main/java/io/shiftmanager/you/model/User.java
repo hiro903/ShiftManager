@@ -22,11 +22,7 @@ public class User {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "パスワードを入力してください")
-    @Size(min = 6, max = 20, message = "パスワードは6文字以上20文字以下で入力してください")
-    @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
-            message = "パスワードは少なくとも1つの英字(A-Z,a-z)、数字(0-9)を含める必要があります"
-    )
+    @Size(min = 4, max = 20, message = "パスワードは4文字以上20文字以下で入力してください")
     private String password;
 
     @NotBlank(message = "メールアドレスを入力してください")

@@ -1,0 +1,37 @@
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(200) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    is_active BOOLEAN DEFAULT TRUE,
+    is_admin BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Shift Requests table
+CREATE TABLE IF NOT EXISTS shift_requests (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    request_date DATE NOT NULL,
+    timezone VARCHAR(20) NOT NULL, -- MORNING, AFTERNOON
+    status VARCHAR(20) NOT NULL, -- REQUESTED, APPROVED, REJECTED
+    is_submitted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Confirmed Shifts table
+CREATE TABLE IF NOT EXISTS confirmed_shifts (
+    confirmed_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    request_id INT,
+    confirmed_date DATE NOT NULL,
+    timezone VARCHAR(20) NOT NULL, -- MORNING, AFTERNOON
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (request_id) REFERENCES shift_requests(request_id)
+); 

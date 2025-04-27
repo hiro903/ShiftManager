@@ -40,8 +40,8 @@ class UserServiceTest {
         testUser.setUsername("testUser");
         testUser.setPassword("password");
         testUser.setEmail("test@example.com");
-        testUser.setIsActive(true);
-        testUser.setIsAdmin(false);
+        testUser.setActive(true);
+        testUser.setAdmin(false);
     }
 
     @Test

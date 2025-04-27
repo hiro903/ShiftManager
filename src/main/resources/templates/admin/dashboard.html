@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">シフト管理システム（管理者）</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/dashboard}">ダッシュボード</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/users}">ユーザー管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/shifts}">シフト管理</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <span class="navbar-text me-3">
+                        ようこそ、<span th:text="${admin != null ? admin.username : '管理者'}">管理者</span>さん
+                    </span>
+                    <form th:action="@{/admin/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-light btn-sm">ログアウト</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>管理者ダッシュボード</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>シフト管理システムの管理者ページへようこそ。</p>
+                        <p>このページから各種管理機能にアクセスできます。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">ユーザー管理</h5>
+                                        <p class="card-text">ユーザーの追加、編集、削除を行います。</p>
+                                        <a th:href="@{/admin/users}" class="btn btn-primary">ユーザー管理へ</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">シフト管理</h5>
+                                        <p class="card-text">シフトの確認、編集を行います。</p>
+                                        <a th:href="@{/admin/shifts}" class="btn btn-primary">シフト管理へ</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">設定</h5>
+                                        <p class="card-text">システム設定を変更します。</p>
+                                        <a th:href="@{/admin/settings}" class="btn btn-primary">設定へ</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html> 

@@ -1,10 +1,12 @@
 package io.shiftmanager.you.mapper;
 
+import io.shiftmanager.you.config.TestConfig;
 import io.shiftmanager.you.model.User;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,9 +20,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * UserMapperを使用したデータベース操作のテストクラス
+ */
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@Import(TestConfig.class)
 public class UserMapperTest {
 
     @Autowired
@@ -31,15 +37,12 @@ public class UserMapperTest {
 
     @BeforeEach
     public void setup() {
-        // テストデータのクリーンアップ
         cleanupTestData();
     }
 
     private void cleanupTestData() {
         try {
-            // 全てのユーザーを取得
             List<User> users = userMapper.getAllUsers();
-            // 1件ずつ削除
             for (User user : users) {
                 userMapper.delete(user.getUserId());
             }
@@ -53,13 +56,14 @@ public class UserMapperTest {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode("testPassword"));
         user.setEmail(email);
-        user.setIsActive(true);
-        user.setIsAdmin(false);
+        user.setActive(true);
+        user.setAdmin(false);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;
     }
 
+    // ユーザーの新規作成と取得の基本機能をテスト
     @Test
     @Transactional
     public void testInsertAndGetUser() {
@@ -73,46 +77,43 @@ public class UserMapperTest {
         assertThat(passwordEncoder.matches("testPassword", retrievedUser.getPassword())).isTrue();
     }
 
+    // メールアドレスの重複チェックをテスト
     @Test
     @Transactional
-    public void testDuplicateUsername() {
-        User user1 = createTestUser("sameUser", "test1@example.com");
-        User user2 = createTestUser("sameUser", "test2@example.com");
+    public void testDuplicateEmail() {
+        User user1 = createTestUser("user1", "same@example.com");
+        User user2 = createTestUser("user2", "same@example.com");
         userMapper.insert(user1);
 
         assertThatThrownBy(() -> userMapper.insert(user2))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
+    // 無効なデータでのユーザー作成時のエラー処理をテスト
     @Test
     @Transactional
     public void testInvalidData() {
         User invalidUser = new User();
-        // 必須フィールドを設定しない
         assertThatThrownBy(() -> userMapper.insert(invalidUser))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    // 全ユーザーの取得機能をテスト
     @Test
     @Transactional
     public void testGetAllUsers() {
-        // 複数のテストユーザーを作成
         User user1 = createTestUser("user1", "user1@example.com");
         User user2 = createTestUser("user2", "user2@example.com");
-        user2.setIsAdmin(true);
+        user2.setAdmin(true);
 
-        // ユーザーの挿入
         userMapper.insert(user1);
         userMapper.insert(user2);
 
-        // 全ユーザーの取得
         List<User> users = userMapper.getAllUsers();
 
-        // 検証
         assertThat(users).isNotEmpty();
         assertThat(users).hasSizeGreaterThanOrEqualTo(2);
 
-        // 取得したユーザーの内容を検証
         User foundUser1 = users.stream()
                 .filter(u -> u.getEmail().equals("user1@example.com"))
                 .findFirst()
@@ -127,6 +128,7 @@ public class UserMapperTest {
         assertThat(foundUser2.isAdmin()).isTrue();
     }
 
+    // ユーザー情報の更新機能をテスト
     @Test
     @Transactional
     public void testUpdateUser() {
@@ -142,6 +144,7 @@ public class UserMapperTest {
         assertThat(updatedUser.getEmail()).isEqualTo("updated@example.com");
     }
 
+    // ユーザーの削除機能をテスト
     @Test
     @Transactional
     public void testDeleteUser() {

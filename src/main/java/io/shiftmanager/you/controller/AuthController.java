@@ -1,44 +1,62 @@
 package io.shiftmanager.you.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import io.shiftmanager.you.model.User;
+
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     @GetMapping("/login")
-    public String showLoginForm(Model model, HttpSession session, HttpServletRequest request){
-        String referrer = request.getHeader("Referrer");
-        if (referrer != null && referrer.contains("/account/create")){
-            return "login";
-        }
-
+    public String showLoginForm(Model model, @RequestParam(value = "error", required = false) String error) {
+        // すでにログイン済みの場合は適切なダッシュボードにリダイレクト
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null &&
-            authentication.isAuthenticated()&&
-            !(authentication instanceof AnonymousAuthenticationToken)){
+        if (authentication != null && 
+            authentication.isAuthenticated() && 
+            !(authentication instanceof AnonymousAuthenticationToken)) {
+            
+            // 管理者かどうかに基づいてリダイレクト
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+                return "redirect:/admin/dashboard";
+            } else {
                 return "redirect:/calendar";
-
             }
-            return "login";
+        }
+        
+        // ログインエラーの処理
+        if (error != null) {
+            if ("access_denied".equals(error)) {
+                model.addAttribute("loginError", true);
+                model.addAttribute("errorMessage", "このページにアクセスする権限がありません");
+            }
+        }
+        
+        model.addAttribute("user", new User());
+        return "login";
     }
 
     @GetMapping("/login-error")
-    public String loginError(Model model){
-        model.addAttribute("loginError",true);
-        model.addAttribute("errorMessage","ユーザー名またはパスワードが間違っています");
+    public String loginError(Model model) {
+        log.warn("ログイン失敗: メールアドレスまたはパスワードが間違っています");
+        model.addAttribute("loginError", true);
+        model.addAttribute("errorMessage", "メールアドレスまたはパスワードが間違っています");
+        model.addAttribute("user", new User());
         return "login";
     }
 
